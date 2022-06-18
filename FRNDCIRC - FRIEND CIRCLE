@@ -1,0 +1,107 @@
+using System;
+using System.Collections.Generic;
+
+
+public class Program
+{
+    private class Node
+    {
+        public static string data { get; set; }
+        public static Node parent { get; set; }
+        public int childCount { get; set; }
+        public  int rank { get; set; }
+    }
+
+    static Dictionary<string, Node> tree;
+    public static void Main(String[] args)
+    {
+
+        int t = Convert.ToInt32(Console.ReadLine());
+        while (t-- > 0)
+        {
+            tree = new Dictionary<string, Node>();
+            var n = Convert.ToInt32(Console.ReadLine());
+            while (n-- > 0)
+            {
+                String[] friends = Console.ReadLine().Split(" ");
+                if (!tree.ContainsKey(friends[0]))
+                {
+                    makeSet(friends[0]);
+                }
+                if (!tree.ContainsKey(friends[1]))
+                {
+                    makeSet(friends[1]);
+                }
+                var maxCount = union(friends);
+                Console.WriteLine(maxCount);
+            }
+        }
+
+    }
+
+    private static int union(String[] friends)
+    {
+        var f0 = tree[friends[0]];
+        var f1 = tree[friends[1]];
+        var p0 = findSet(f0);
+        var p1 = findSet(f1);
+        if (p0 == p1)
+        {
+            return p0.childCount;
+        }
+        if (p0.rank >= p1.rank)
+        {
+            p1.parent = p0;
+            p0.childCount += p1.childCount;
+            if (p1.rank == p0.rank)
+            {
+                p0.rank++;
+            }
+            return p0.childCount;
+        }
+        else
+        {
+            p0.parent = p1;
+            p1.childCount += p0.childCount;
+            return p1.childCount;
+        }
+    }
+    static Node findSet(Node node)
+    {
+        if (node.parent == node)
+        {
+            return node;
+        }
+        return findSet(node.parent);
+    }
+    public static void makeSet(String friend)
+    {
+        var node = new Node();
+        node.data = friend;
+        node.parent = node;
+        node.childCount = 1;
+        node.rank = 1;
+        tree[friend] = node;
+    }
+    static class OutputWriter
+    {
+
+        public static void print(params Object[] objects)
+        {
+            for (int i = 0; i < objects.Length; i++)
+            {
+                if (i != 0)
+                {
+                    Console.WriteLine(' ');
+                }
+                Console.WriteLine(objects[i]);
+            }
+        }
+        public static void println(params Object[] objects)
+        {
+            Console.WriteLine(objects);
+
+        }
+
+    }
+}
